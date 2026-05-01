@@ -1,37 +1,18 @@
 import { Hono } from 'hono';
 import { serve } from '@hono/node-server';
-import pkg from 'pg';
-const { Pool } = pkg;
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { db, runMigrations } from './db/index.js';
+import { users } from './db/schema.js';
+import { eq } from 'drizzle-orm';
 
 const app = new Hono();
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || 'postgres://rentpi:localpassword@postgres:5432/rentpi_local'
+// Run migrations on startup
+runMigrations().catch(err => {
+  console.error('Migration failed:', err);
 });
-
 const JWT_SECRET = process.env.JWT_SECRET || 'supersecret';
-
-// Initialize database
-const initDb = async () => {
-  try {
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS users (
-        id SERIAL PRIMARY KEY,
-        name TEXT NOT NULL,
-        email TEXT UNIQUE NOT NULL,
-        password TEXT NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      );
-    `);
-    console.log('Database initialized');
-  } catch (err) {
-    console.error('Failed to initialize database', err);
-  }
-};
-
-initDb();
 
 app.get('/status', (c) => {
   return c.json({ service: 'user-service', status: 'OK' });
@@ -46,14 +27,17 @@ app.post('/users/register', async (c) => {
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
-    const result = await pool.query(
-      'INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING id, name, email',
-      [name, email, hashedPassword]
-    );
+    const [user] = await db.insert(users).values({
+      name,
+      email,
+      password: hashedPassword
+    }).returning({
+      id: users.id,
+      name: users.name,
+      email: users.email
+    });
 
-    const user = result.rows[0];
     const token = jwt.sign({ id: user.id, email: user.email, name: user.name }, JWT_SECRET);
-
     return c.json({ token });
   } catch (err: any) {
     if (err.code === '23505') {
@@ -71,8 +55,7 @@ app.post('/users/login', async (c) => {
   }
 
   try {
-    const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
-    const user = result.rows[0];
+    const [user] = await db.select().from(users).where(eq(users.email, email)).limit(1);
 
     if (!user || !(await bcrypt.compare(password, user.password))) {
       return c.json({ error: 'Invalid credentials' }, 401);
