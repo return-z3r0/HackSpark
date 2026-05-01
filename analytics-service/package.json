@@ -1,15 +1,19 @@
 {
   "name": "analytics-service",
-  "module": "src/index.ts",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "start": "bun run src/index.ts",
-    "dev": "bun run --hot src/index.ts"
+    "dev": "node --loader ts-node/esm src/index.ts",
+    "start": "node dist/index.js",
+    "build": "tsc"
   },
   "dependencies": {
-    "hono": "^4.2.4"
+    "@hono/node-server": "^1.11.1",
+    "hono": "^4.4.2"
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/node": "^20.14.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
   }
 }

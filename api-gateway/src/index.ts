@@ -14,8 +14,17 @@ app.get('/status', async (c) => {
 
   const fetchService = async (name: string, url: string) => {
     try {
-      const res = await fetch(`${url}/status`);
-      const data = await res.json();
+      const controller = new AbortController();
+      const id = setTimeout(() => controller.abort(), 2000); // 2s timeout
+      const res = await fetch(`${url}/status`, { signal: controller.signal });
+      clearTimeout(id);
+
+      if (!res.ok) {
+        downstream[name] = 'UNREACHABLE';
+        return;
+      }
+
+      const data: any = await res.json();
       if (data && data.status === 'OK') {
         downstream[name] = 'OK';
       } else {
@@ -37,8 +46,12 @@ app.get('/status', async (c) => {
   });
 });
 
-export default {
-  port: process.env.PORT || 8000,
-  hostname: "0.0.0.0",
+import { serve } from '@hono/node-server';
+
+const port = Number(process.env.PORT) || 8000;
+console.log(`Server is running on port ${port}`);
+
+serve({
   fetch: app.fetch,
-};
+  port,
+});

@@ -5,8 +5,12 @@ app.get('/status', (c) => {
   return c.json({ service: 'agentic-service', status: 'OK' });
 });
 
-export default {
-  port: process.env.PORT || 8004,
-  hostname: "0.0.0.0",
+import { serve } from '@hono/node-server';
+
+const port = Number(process.env.PORT) || 8004;
+console.log(`Server is running on port ${port}`);
+
+serve({
   fetch: app.fetch,
-};
+  port,
+});

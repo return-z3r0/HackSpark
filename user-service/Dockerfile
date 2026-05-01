@@ -1,11 +1,25 @@
-FROM oven/bun:1-alpine as builder
-WORKDIR /app
-COPY package.json .
-RUN bun install
-COPY . .
 
-FROM oven/bun:1-alpine as runtime
+# Stage 1: Build
+FROM node:20-alpine AS builder
+
 WORKDIR /app
-COPY --from=builder /app /app
+
+COPY package*.json ./
+RUN npm install
+
+COPY . .
+RUN npm run build
+
+# Stage 2: Runtime
+FROM node:20-alpine AS runtime
+
+WORKDIR /app
+
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/dist ./dist
+
+RUN npm install --omit=dev
+
 EXPOSE 8001
-CMD ["bun", "run", "src/index.ts"]
+
+CMD ["node", "dist/index.js"]
