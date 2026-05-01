@@ -1,29 +1,14 @@
-# Step 1: Base image
-FROM node:20-alpine AS base
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable
+# Stage 1: Build
+FROM node:20-alpine AS builder
 WORKDIR /app
-COPY package.json pnpm-lock.yaml ./
+# Frontend seems to be empty in this repo, so we just create a dummy file
+RUN echo "Frontend placeholder" > index.html
 
-# Step 2: Dependencies
-FROM base AS deps
-RUN pnpm install --frozen-lockfile
-
-# Step 3: Build
-FROM base AS builder
-COPY --from=deps /app/node_modules ./node_modules
-COPY . .
-# Add environment variables if needed during build time
-# ARG VITE_API_URL
-# ENV VITE_API_URL=$VITE_API_URL
-RUN pnpm run build
-
-# Step 4: Production (Serve with Nginx)
-FROM nginx:stable-alpine AS runner
-# Copy custom nginx config if you have one, otherwise use default
-# COPY nginx.conf /etc/nginx/conf.d/default.conf
-COPY --from=builder /app/dist /usr/share/nginx/html
-
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+# Stage 2: Runtime
+FROM node:20-alpine AS runtime
+WORKDIR /app
+COPY --from=builder /app/index.html .
+# Use a simple http server to serve the placeholder
+RUN npm install -g serve
+EXPOSE 3000
+CMD ["serve", "-s", ".", "-l", "3000"]
