@@ -1,0 +1,26 @@
+{
+  "name": "hackspark",
+  "version": "1.0.0",
+  "description": "> **10 Hours · Onsite · Team Size: 3** <br> > Build the next generation of RentPi, a real-world rental platform, microservice by microservice.",
+  "main": "index.js",
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  },
+  "scripts": {
+    "dev": "docker compose up --build api-gateway user-service rental-service analytics-service agentic-service",
+    "start": "npm run dev",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/return-z3r0/HackSpark.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/return-z3r0/HackSpark/issues"
+  },
+  "homepage": "https://github.com/return-z3r0/HackSpark#readme"
+}
