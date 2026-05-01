@@ -65,7 +65,8 @@ services:
       agentic-service:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:8000/status || exit 1"]
+      test: ["CMD-SHELL", "bun -e \"try { const response = await fetch('http://localhost:8000/status'); if (!response.ok) process.exit(1); } catch { process.exit(1); }\""]
+      start_period: 30s
       interval: 15s
       timeout: 5s
       retries: 3
@@ -89,7 +90,8 @@ services:
       postgres:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:8001/status || exit 1"]
+      test: ["CMD-SHELL", "bun -e \"try { const response = await fetch('http://localhost:8001/status'); if (!response.ok) process.exit(1); } catch { process.exit(1); }\""]
+      start_period: 30s
       interval: 15s
       timeout: 5s
       retries: 3
@@ -112,7 +114,8 @@ services:
       user-service:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:8002/status || exit 1"]
+      test: ["CMD-SHELL", "bun -e \"try { const response = await fetch('http://localhost:8002/status'); if (!response.ok) process.exit(1); } catch { process.exit(1); }\""]
+      start_period: 30s
       interval: 15s
       timeout: 5s
       retries: 3
@@ -131,7 +134,8 @@ services:
       CENTRAL_API_URL:   ${CENTRAL_API_URL}
       CENTRAL_API_TOKEN: ${CENTRAL_API_TOKEN}
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:8003/status || exit 1"]
+      test: ["CMD-SHELL", "bun -e \"try { const response = await fetch('http://localhost:8003/status'); if (!response.ok) process.exit(1); } catch { process.exit(1); }\""]
+      start_period: 30s
       interval: 15s
       timeout: 5s
       retries: 3
@@ -161,7 +165,8 @@ services:
       rental-service:        
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:8004/status || exit 1"]
+      test: ["CMD-SHELL", "bun -e \"try { const response = await fetch('http://localhost:8004/status'); if (!response.ok) process.exit(1); } catch { process.exit(1); }\""]
+      start_period: 30s
       interval: 15s
       timeout: 5s
       retries: 3
@@ -183,7 +188,8 @@ services:
       api-gateway:
         condition: service_healthy
     healthcheck:                                     
-      test: ["CMD-SHELL", "wget -qO- http://localhost:3000 || exit 1"]
+      test: ["CMD-SHELL", "bun -e \"try { const response = await fetch('http://localhost:3000'); if (!response.ok) process.exit(1); } catch { process.exit(1); }\""]
+      start_period: 30s
       interval: 15s
       timeout: 5s
       retries: 3

@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    // 1. Environment & Target
+    "target": "ESNext",
+    "lib": ["ESNext", "DOM"], // DOM is optional if you're strictly backend
+    "module": "Preserve",      // The modern standard for Bun & Vite
+    "moduleDetection": "force",
+    "jsx": "react-jsx",       // Bun supports JSX out of the box
+
+    // 2. Bun-Specific & Resolution
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "noEmit": true,           // Bun handles the transpilation, TS just checks types
+    "allowJs": true,
+    "types": ["bun"],         // Requires 'bun add -d @types/bun'
+
+    // 3. Strictness & Interop
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "verbatimModuleSyntax": true, // Ensures modern ESM-friendly imports
+
+    // 4. Path Aliases
+    "paths": {
+      "@/*": ["./src/*"],
+      "@components/*": ["./src/components/*"],
+      "@lib/*": ["./src/lib/*"]
+    }
+  },
+  "include": ["src/**/*", "env.d.ts"],
+  "exclude": ["node_modules"]
+}

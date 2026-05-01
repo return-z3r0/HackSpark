@@ -1,0 +1,15 @@
+{
+  "name": "agentic-service",
+  "module": "src/index.ts",
+  "type": "module",
+  "scripts": {
+    "start": "bun run src/index.ts",
+    "dev": "bun run --hot src/index.ts"
+  },
+  "dependencies": {
+    "hono": "^4.2.4"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  }
+}

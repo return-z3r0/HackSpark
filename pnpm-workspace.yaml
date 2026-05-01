@@ -1,0 +1,7 @@
+packages:
+  - 'api-gateway'
+  - 'user-service'
+  - 'rental-service'
+  - 'analytics-service'
+  - 'agentic-service'
+
